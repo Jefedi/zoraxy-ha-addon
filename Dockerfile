@@ -1,16 +1,16 @@
-# Utilisation de l'image de base Debian pour bénéficier de GCC et de python3-dev et libc-dev
 FROM python:3.10.12
 
-# Définition du répertoire de travail
 WORKDIR /usr/src/app
 
 COPY data/ ./
-RUN apt-get update
-RUN apt-get install libasound-dev libportaudio2 libportaudiocpp0 portaudio19-dev python3-opencv ffmpeg -y
+RUN apt-get update && \
+    apt-get install -y libasound-dev libportaudio2 libportaudiocpp0 portaudio19-dev python3-opencv ffmpeg
 RUN pip install --upgrade pip
 RUN pip install --no-cache-dir -r requirements.txt
 
-EXPOSE 6980
-EXPOSE 16045
+COPY --chmod=700 data/run.sh /run.sh
+RUN chmod +x /run.sh
 
-CMD [ "python", "./app.py" ]
+EXPOSE 6980 16045 8000
+
+CMD ["/run.sh"]
