@@ -1,0 +1,42 @@
+# ---> Go
+# Compiled Object files, Static and Dynamic libs (Shared Objects)
+src/*.o
+src/*.a
+src/*.so
+src/*.exe
+
+# Folders
+src/_obj
+src/_test
+
+src/*.cgo1.go
+src/*.cgo2.c
+src/_cgo_defun.c
+src/_cgo_gotypes.go
+src/_cgo_export.*
+
+src/_testmain.go
+
+src/*.exe
+src/*.test
+src/*.prof
+
+src/sys.db
+src/src/sys.db.lock
+src/conf/*
+src/ReverseProxy_*_*
+src/Zoraxy_*_*
+src/certs/*
+src/rules/*
+src/README.md
+docker/ContainerTester.sh
+docker/docker-compose.yaml
+src/mod/acme/test/stackoverflow.pem
+/tools/dns_challenge_update/code-gen/acmedns
+/tools/dns_challenge_update/code-gen/lego
+src/tmp/localhost.key
+src/tmp/localhost.pem
+src/www/html/index.html
+src/sys.uuid
+src/zoraxy
+src/log/

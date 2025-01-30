@@ -1,0 +1,852 @@
+/*
+    index.html style overwrite
+*/
+
+/* Theme color palletes are defined in darktheme.css */
+
+/* Theme Toggle CSS */
+#themeColorButton{
+    background-color: black;
+    color: var(--text_color_inverted);
+}
+
+body.darkTheme #themeColorButton{
+    background-color: white;
+}
+
+body{
+    background-color:var(--theme_bg);
+}
+
+.functiontab{
+    display:none;
+}
+
+.advance{
+    background: var(--theme_advance) !important;
+}
+
+.advancezone{
+    background: var(--theme_advance) !important;
+    border-radius: 1em !important;
+}
+
+.menubar{
+    width: 100%;
+    padding: 0.4em;
+    padding-left: 1.2em;
+    padding-right: 1.2em;
+    background-color: var(--theme_bg_secondary);
+    margin-bottom: 1em;
+    border-bottom: 1px solid var(--theme_highlight);
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 10;
+}
+
+.menubar .logo{
+    height: 36px;
+}
+
+.menubar .item{
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.wrapper{
+    display: flex;
+    align-items: flex-start;
+    padding-top: 4.6em;
+}
+
+.toolbar {
+    display: inline-block;
+    height: calc(100% - 51px);
+    overflow-y: auto;
+    width: 240px;
+    position: sticky;
+    top: 4em;
+}
+
+.contentWindow{
+    display: inline-block;
+    width: calc(100% - 240px);
+    vertical-align: top;
+    background-color: var(--theme_bg_primary);
+    border-radius: 1em;
+    margin-right: 2em;
+}
+
+.menutoggle{
+    display: none !important;
+}
+
+.rulesInstructions, .rulesInstructions span{
+    color: white !important;
+}
+
+.ui.divider{
+    font-weight: 300;
+}
+
+.serverstatusWrapper{
+   padding-right: 0 !important;
+}
+
+.statisticWrapper{
+    margin-top: 1em;
+    padding-left: 0 !important;
+    padding-bottom: 0 !important;
+    padding-right: 1em !important;
+}
+
+.statisticWrapper .statustab{
+    margin-right: 1em;
+}
+
+
+/* Message Box */
+#messageBox{
+    position: fixed;
+    bottom: 1em;
+    right: 1em;
+    display:none;
+    max-width: 300px;
+    z-index: 1000;
+}
+
+/* Confirm Box */
+#confirmBox{
+    position: fixed;
+    z-index: 999;
+    bottom: 1em;
+    right: 1em;
+    min-width: 300px;
+    background-color: #ffffff;
+    color: rgb(65, 65, 65);
+    box-shadow: 10px 10px 5px -2px rgba(0,0,0,0.13);
+}
+
+#confirmBox .confirmBoxBody{
+    padding: 1em;
+}
+
+#confirmBox .ui.progress .bar{
+    background: #a9d1f3 !important;
+}
+
+#confirmBox .confirmBoxBody .button{
+    margin-top: -0.4em;
+}
+
+#confirmBox .questionToConfirm{
+    margin-top: -0.2em;
+}
+
+/* Standard containers */
+.standardContainer{
+    position: relative;
+}
+
+.standardContainer.noleftright{
+    padding-left: 0;
+    padding-right: 0;
+}
+
+.standardContainer.noleft{
+    padding-left: 0;
+}
+
+.standardContainer.noright{
+    padding-right: 0;
+}
+
+.standardContainer.notopdown{
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+.standardContainer.notop{
+    padding-top: 0;
+}
+
+.standardContainer.nobottom{
+    padding-bottom: 0;
+}
+
+/*
+    Side Wrapper
+*/
+.sideWrapper{
+    position: fixed;
+    right: 0;
+    top: 52px;
+    height: 100%;
+    width: calc(100% - 5em);
+    max-width: 500px;
+    z-index: 10;
+}
+
+.sideWrapper .content{
+    height: 100%;
+    width: 100%;
+    position: relative;
+    background-color: white;
+}
+
+.sideWrapper iframe{
+    height: calc(100% - 55px);
+    width: 100%;
+    border: 0px solid transparent;
+}
+
+.sideWrapper .fadingBackground{
+    position: fixed;
+    top: 52px;
+    left: 0;
+    width: 100%;
+    height: calc(100% - 52px);
+    background-color: rgba(38,38,38,0.26);
+}
+
+.sideWrapperMenu{
+    height: 3px;
+    background: var(--theme_background);
+}
+
+/*
+    RWD Rules
+*/
+
+
+@media screen and (min-width: 750px) {
+    .standardContainer{
+        padding-left: 2.4em;
+        padding-right: 2.4em;
+        padding-top: 2em;
+        padding-bottom: 2em;
+    }
+
+}
+
+@media screen and (max-width: 748px) {
+    #serverstatus{
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+    }
+
+
+    .statisticWrapper .statustab{
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+    }
+
+    .toolbar {
+        position: fixed;
+        display: inline-block;
+        width: 240px;
+        background-color: white;
+        top: 3.6em;
+        right: 0;
+        height: calc(100% - 51px);
+        overflow-y: auto;
+        margin-bottom: 1em;
+        z-index: 9;
+        padding: 1em;
+        display:none;
+        border-left: 1px solid rgb(206, 206, 206);
+    }
+
+    .menutoggle{
+        display: inline-block !important;
+    }
+
+    #mainmenu{
+        width: calc(100% - 1em);
+    }
+
+    .contentWindow{
+        display: inline-block;
+        width: 100%;
+        margin-right: 0.4em;
+        margin-left: 0.4em;
+    }
+
+    .functiontab{
+        padding: 0em;
+    }
+
+    #serverstatus.green{
+        border-bottom: 0px solid transparent !important;
+    }
+
+    .standardContainer{
+        padding-left: 1.2em;
+        padding-right: 1.2em;
+        padding-top: 0.6em;
+        padding-bottom: 0.6em;
+    }
+    
+}
+
+.menudivider{
+    font-size: 0.8em !important;
+    color: #9c9c9c !important;
+    padding-left: 0.6em;
+}
+
+/*
+    Global rules overwrite
+*/
+
+.ui.teal.button{
+    background-color: #3d9c64 !important;
+}
+
+.ui.red.button:not(.basic){
+    background-color: #cc3b3b !important;
+}
+
+.ui.menu .item{
+    color: var(--item_color);
+}
+
+.ui.segment{
+    box-shadow: none !important;
+}
+
+
+.ui.secondary.vertical.menu .active.item{
+    background: var(--theme_background);
+    font-weight: 600;
+    color: white;
+}
+
+.ui.secondary.vertical.menu .active.item .icon{
+    animation: blinker 3s ease-in-out infinite;
+}
+
+.basic.segment.advanceoptions{
+    background-color: var(--theme_advance); 
+    border-radius: 1em;
+}
+
+.bluefont{
+    color: #417ac1 !important;
+}
+
+@keyframes blinker {
+    50% {
+        opacity: 50%;
+    }
+}
+
+/*
+    Status style overwrite
+*/
+#serverstatus{
+    height: 100%;
+    border-radius: 1em;
+    margin: 1em;
+}
+
+#statusTitle{
+    font-weight: 300;
+}
+
+#serverstatus.green{
+    background: linear-gradient(60deg, #27e7ff, #00ca52);
+}
+#serverstatus.green .sub.header{
+    color: rgb(224, 224, 224);
+}
+#serverstatus.green i,
+#serverstatus.green #statusTitle{
+    color: rgb(255, 255, 255);
+}
+#serverstatus.green #statusText{
+    color: rgb(255, 255, 255);
+}
+
+
+#serverstatus:not(.green) .dot-container{
+    display:none;
+}
+
+#serverstatus:not(.green){
+    background: linear-gradient(215deg, rgba(38,60,71,1) 13%, rgba(2,3,42,1) 84%);
+}
+
+#serverstatus:not(.green) #statusTitle,
+#serverstatus:not(.green) i,
+#serverstatus:not(.green) .sub.header{
+    color: white;
+}
+
+
+.statustab{
+    min-height: 5.5em;
+    margin: 1em;
+    border-radius: 1em !important;
+}
+
+#summaryTotalCount{
+    font-size: 1.6em;
+    font-weight: 300;
+}
+
+.statustab.summary{
+    background-color: #f1f1f1 !important;
+    border: 0px solid transparent !important;
+}
+
+.statustab.summary span, .statustab.summary i{
+    color: rgb(37, 37, 37);
+}
+
+#networkActivityPlaceHolder{
+    color:rgb(206, 206, 206);
+    height: 200px;
+    width: 100%;
+    text-align: center;
+    padding-top: 80px;
+    display:none;
+}
+
+/* Decorative Animation */
+.dot-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 40px;
+    position: absolute;
+    bottom: 0.6em;
+    right: 1.2em;
+}
+  
+  .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: #d9d9d9;
+    margin-right: 6px;
+    animation-name: dot-animation;
+    animation-duration: 4s;
+    animation-timing-function: ease-in-out;
+    animation-iteration-count: infinite;
+  }
+  
+  .dot:nth-child(1) {
+    animation-delay: 0s;
+  }
+  
+  .dot:nth-child(2) {
+    animation-delay: 1s;
+  }
+  
+  .dot:nth-child(3) {
+    animation-delay: 2s;
+  }
+  
+  .dot:nth-child(4) {
+    animation-delay: 3s;
+  }
+  
+  @keyframes dot-animation {
+    0% {
+      background-color: #d9d9d9;
+      transform: scale(1);
+    }
+    50% {
+      background-color: white;
+      transform: scale(1.5);
+    }
+    100% {
+      background-color: #d9d9d9;
+      transform: scale(1);
+    }
+  }
+
+  /* Remind message for user forgetting to click Apply button*/
+  #applyButtonReminder{
+    position: absolute; 
+    bottom:-1.6em; 
+    left: 0; 
+    font-weight: bolder; 
+    color: #faac26; 
+    display:none;
+  }
+
+/* 
+  Default Site
+*/
+
+#setroot{
+    border-radius: 0.6em;
+}
+
+/*
+  HTTP Proxy & Virtual Directory
+*/
+
+#currentVirtualDirectoryAttachingHost{
+    background: var(--theme_background); 
+    color: white;
+    border-radius: 1em;
+    font-weight: bolder;
+}
+
+.section.disabled{
+    opacity: 0.5;
+    user-select: none;
+    pointer-events: none;
+}
+
+/*
+    Access Control
+*/
+
+.ui.very.compact.table th{
+    padding-top: 0.2em;
+    padding-bottom: 0.2em;
+}
+
+
+.ui.very.compact.table td{
+    padding-top: 0.1em;
+    padding-bottom: 0.1em;
+}
+
+#ipTable.disabled{
+    opacity: 0.5;
+    pointer-events: none;
+    user-select: none;
+}
+
+/*
+    TCP Proxy
+*/
+
+.streamproxConfig td:first-child{
+    position: relative;
+}
+
+.streamproxConfig.running td:first-child{
+    border-left: 0.6em solid #01cb55 !important;
+}
+
+.streamproxConfig.stopped td:first-child{
+    border-left: 0.6em solid #1b1b1b !important;
+}
+
+.streamproxConfig td:first-child .statusText{
+    position: absolute;
+    bottom: 0.1em;
+    right: 0.2em;
+    font-size: 1em;
+    color:rgb(224, 224, 224);
+    opacity: 0.7;
+    pointer-events: none;
+    user-select: none;
+}
+
+/*
+    ACME Renewer Status Panel
+*/
+
+.acmeRenewStateWrapper{
+    padding: 1em;
+    border-radius: 1em !important;
+}
+
+
+.acmeRenewStateWrapper .ui.header, .acmeRenewStateWrapper .sub.header{
+    color: white !important;
+}
+
+.acmeRenewStateWrapper:not(.enabled){
+    background: var(--theme_red) !important;
+}
+
+
+.acmeRenewStateWrapper.enabled{
+    background: var(--theme_green) !important;
+}
+
+/*
+    SSO Panel
+*/
+
+.ssoRunningState{
+    padding: 1em;
+    border-radius: 1em !important;
+}
+
+
+.ssoRunningState .ui.header, .ssoRunningState .sub.header{
+    color: white !important;
+}
+
+.ssoRunningState:not(.enabled){
+    background: var(--theme_red) !important;
+}
+
+.ssoRunningState.enabled{
+    background: var(--theme_green) !important;
+}
+
+
+/*
+    Static Web Server
+*/
+
+.webservRunningStateWrapper{
+    padding: 1em;
+    border-radius: 1em !important;
+}
+
+
+.webservRunningStateWrapper .ui.header, .webservRunningStateWrapper .sub.header{
+    color: white !important;
+}
+
+.webservRunningStateWrapper:not(.enabled){
+    background: var(--theme_red) !important;
+}
+
+.webservRunningStateWrapper.enabled{
+    background: var(--theme_green) !important;
+}
+
+
+/*
+    Uptime Monitor
+*/
+#utm{
+    background-color: white;
+    border-radius: 1em;
+}
+
+
+.domain{
+    margin-bottom: 1em;
+    position: relative;
+}
+
+.statusDot{
+    height: 1.8em;
+    border-radius: 0.4em;
+    width: 0.4em;
+    background-color: #e8e8e8;
+    display:inline-block;
+    cursor: pointer;
+    margin-left: 0.1em;
+}
+
+.online.statusDot{
+    background-color: #3bd671;
+}
+.error.statusDot{
+    background-color: #f29030;
+}
+.offline.statusDot{
+    background-color: #df484a;
+}
+.padding.statusDot{
+    cursor: auto;
+}
+
+/*
+    Global Area Network
+    gan.html
+*/
+.clickable{
+    cursor: pointer;
+}
+
+.clickable:hover{
+    opacity: 0.6;
+}
+
+#ganetRangeTable td{
+    text-align: center;
+}
+
+
+.gansnetworks.disabled{
+    opacity: 0.5;
+    pointer-events: none;
+    user-select: none;
+}
+
+.GANetMember.authorized{
+    border-left: 6px solid #3c9c63 !important;
+}
+
+.GANetMember.unauthorized{
+    border-left: 6px solid #9c3c3c !important;
+}
+
+/*
+    Network Utilities
+*/
+
+#traceroute_results{
+    resize: none; 
+    background-color: #202020; 
+    color: white;
+}
+
+#traceroute_results::selection {
+    background: #a9d1f3; 
+}
+
+/*
+    Quick Start Overview
+*/
+
+#quickstart .serviceOption{
+    position: relative;
+    overflow: hidden;
+    padding: 1em;
+    background-color: rgb(240, 240, 240);
+    border-radius: 0.6em;
+    cursor: pointer;
+    min-height: 250px;
+    transition: opacity 0.1s ease-in-out;
+}
+
+
+#quickstart .serviceOption .activeOption{
+    position: absolute;
+    bottom: 0.2em;
+    left: 0.2em;
+    display:none;
+}
+
+#quickstart .serviceOption.active .activeOption{
+    display: block;
+}
+
+
+#quickstart .serviceOption .titleWrapper{
+    text-align: center;
+    width: 100%;
+    font-weight: bolder;
+    font-size: 1.3em;
+}
+
+#quickstart .serviceOption :not(.titleWrapper){
+    font-weight: bold;
+}
+
+#quickstart .serviceOption .themebackground{
+    opacity: 0.2;
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    margin-right: -1em;
+    margin-bottom: -2em;
+    pointer-events: none;
+    user-select: none;
+}
+
+#quickstart .serviceOption:not(.active):hover{
+    opacity: 0.8;
+}
+
+#quickstart .serviceOption.tls{
+    background: var(--theme_green);
+    color: white;
+}
+
+#quickstart .serviceOption.subdomain{
+    background: var(--theme_background);
+    color: white;
+}
+
+#quickstart .serviceOption.homepage{
+    background: var(--theme_background_inverted);
+    color: white;
+}
+
+
+#quickstart .finished.ui.button{
+    background: var(--theme_green);
+    color: white;
+}
+
+#tourModal{
+    background-color: white;
+    border-radius: 0.6em;
+    padding: 1.4em;
+    position: fixed;
+    z-index: 999;
+    width: 380px;
+    display:none;
+    border: 1px solid rgb(230, 230, 230);
+    box-shadow: 3px 3px 11px -3px rgba(0,0,0,0.3);
+}
+
+/* Locations of tourModal */
+#tourModal[position="center"]{
+    top: 200px;
+    left: calc(50% - 190px);
+}
+
+#tourModal[position="topleft"]{
+    top: 4em;
+    left: 4em;
+}
+
+#tourModal[position="topright"]{
+    top: 4em;
+    right: 4em;
+}
+
+#tourModal[position="bottomleft"]{
+    bottom: 4em;
+    left: 4em;
+}
+
+#tourModal[position="bottomright"]{
+    bottom: 4em;
+    right: 4em;
+}
+
+
+#tourModal .tourStepButtonFinish{
+    background: var(--theme_green) !important;
+    color: white;
+}
+
+
+#tourModal .tourCloseButton{
+    position: absolute;
+    top: 0em;
+    right: 0em;
+    margin-top: -0.6em;
+    margin-right: -0.6em;
+}
+
+#tourModal .nextStepFinish{
+    display: none;
+}
+
+#tourModal.nofocus{
+    box-shadow: 0 0 0 max(100vh, 100vw) rgba(0, 0, 0, .3);
+}
+
+
+#tourModalOverlay{
+    position: fixed;
+    top: 10em;
+    left: 10em;
+    width: 300px;
+    height: 200px;
+    pointer-events: none;
+    z-index: 199;
+    border-radius: 0.6em;
+    box-shadow: 0 0 0 max(100vh, 100vw) rgba(0, 0, 0, .3);
+}

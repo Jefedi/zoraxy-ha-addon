@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1, maximum-scale=1"/>
+        <meta charset="UTF-8">
+        <meta name="theme-color" content="#4b75ff">
+        <meta name="zoraxy.csrf.Token" content="{{.csrfToken}}">
+        <link rel="icon" type="image/png" href="./favicon.png" />
+        <title>Control Panel | Zoraxy</title>
+        <link rel="stylesheet" href="script/semantic/semantic.min.css">
+        <script src="script/jquery-3.6.0.min.js"></script>
+        <script src="script/semantic/semantic.min.js"></script>
+        <script src="script/tablesort.js"></script>
+        <script src="script/countryCode.js"></script>
+        <script src="script/chart.js"></script>
+        <script src="script/utils.js"></script>
+        <link rel="stylesheet" href="main.css">
+        <link rel="stylesheet" href="darktheme.css">
+    </head>
+    <body>
+        <script src="script/darktheme.js"></script>
+        <div class="menubar">
+            <div class="item">
+                <img class="logo" src="img/logo.svg">
+            </div>
+
+            <div class="ui right floated buttons menutoggle" style="padding-top: 2px;">
+                <button id="sidemenuBtn" class="ui basic icon button" onclick="$('.toolbar').fadeToggle('fast');"><i class="content icon"></i></button>
+            </div>
+            <div class="ui right floated buttons" style="padding-top: 2px; padding-right: 0.4em;">
+                <button class="ui basic white icon button" onclick="logout();"><i class="sign-out icon"></i></button>
+            </div>
+            <div class="ui right floated buttons" style="padding-top: 2px; margin-right: 0.4em;">
+                <button id="themeColorButton" class="ui icon button" onclick="toggleTheme();"><i class="sun icon"></i></button>
+            </div>
+        </div>
+        <div class="wrapper">
+            <div class="toolbar">
+                <div id="mainmenu" class="ui secondary vertical menu">
+                    <a class="item" tag="qstart">
+                        <i class="simplistic magic icon"></i>Quick Start
+                    </a>
+                    <a class="item active" tag="status">
+                        <i class="simplistic info circle icon"></i>Status
+                    </a>
+                    <a class="item" tag="setroot">
+                        <i class="simplistic home icon"></i> Default Site
+                    </a>
+                    <div class="ui divider menudivider">Reverse Proxy</div>
+                    <a class="item" tag="httprp">
+                        <i class="simplistic sitemap icon"></i> HTTP Proxy
+                    </a>
+                    <a class="item" tag="vdir">
+                        <i class="simplistic folder icon"></i> Virtual Directory
+                    </a>
+                    <a class="item" tag="rules">
+                        <i class="simplistic plus square icon"></i> Create Proxy Rules
+                    </a>
+                    <a class="item" tag="streamproxy">
+                        <i class="simplistic exchange icon"></i> Stream Proxy
+                    </a>
+                    <div class="ui divider menudivider">Access & Connections</div>
+                    <a class="item" tag="redirectset">
+                        <i class="simplistic level up alternate icon"></i> Redirection
+                    </a>
+                    <a class="item" tag="access">
+                        <i class="simplistic ban icon"></i> Access Control
+                    </a>
+                    <a class="item" tag="gan">
+                        <i class="simplistic globe icon"></i> Global Area Network
+                    </a>
+                    <div class="ui divider menudivider">Security</div>
+                    <a class="item" tag="cert">
+                        <i class="simplistic lock icon"></i> TLS / SSL certificates
+                    </a>
+                    <a class="item" tag="sso">
+                        <i class="simplistic user circle icon"></i> SSO / Oauth
+                    </a>
+                    <div class="ui divider menudivider">Others</div>
+                    <a class="item" tag="webserv">
+                        <i class="simplistic globe icon"></i> Static Web Server
+                    </a>
+                    <a class="item" tag="utm">
+                        <i class="simplistic time icon"></i> Uptime Monitor
+                    </a>
+                    <a class="item" tag="networktool">
+                        <i class="simplistic terminal icon"></i> Network Tools
+                    </a>
+                    <a class="item" tag="stats">
+                        <i class="simplistic database icon"></i> Statistical Analysis
+                    </a>
+                    <a class="item" tag="utils">
+                        <i class="simplistic paperclip icon"></i> Utilities
+                    </a>
+                    <!-- Add more components here -->
+                </div>
+            </div>
+            <div class="contentWindow">
+                <!-- Quick Start -->
+                <div id="qstart" class="functiontab" target="quickstart.html"></div>
+
+                <!-- Status Tab -->
+                <div id="status" class="functiontab" target="status.html" style="display: block ;">
+                    <br><br><div class="ui active centered inline loader"></div>
+                </div>
+
+                <!-- Virtual Directory Tab -->
+                <div id="vdir" class="functiontab" target="vdir.html"></div>
+
+                <!-- Subdomain Proxy -->
+                <div id="httprp" class="functiontab" target="httprp.html"></div>
+
+                <!-- Create Rules -->
+                <div id="rules" class="functiontab" target="rules.html"></div>
+
+                <!-- Set proxy root -->
+                <div id="setroot" class="functiontab" target="rproot.html"></div>
+
+                <!-- Set TLS cert -->
+                <div id="cert" class="functiontab" target="cert.html"></div>
+
+                <!-- Redirections -->
+                <div id="redirectset" class="functiontab" target="redirection.html"></div>
+
+                <!-- Blacklist -->
+                <div id="access" class="functiontab" target="access.html"></div>
+
+                <!-- Global Area Networking -->
+                <div id="gan" class="functiontab" target="gan.html"></div>
+
+                <!-- SSO / Oauth services -->
+                <div id="sso" class="functiontab" target="sso.html"></div>
+
+                <!-- TCP Proxy -->
+                <div id="streamproxy" class="functiontab" target="streamprox.html"></div>
+
+                <!-- Web Server -->
+                <div id="webserv" class="functiontab" target="webserv.html"></div>
+
+                <!-- Up Time Monitor -->
+                <div id="utm" class="functiontab" target="uptime.html"></div>
+
+                <!-- Network Tools -->
+                <div id="networktool" class="functiontab" target="networktools.html"></div>
+
+                <!-- Statistic Tools -->
+                <div id="stats" class="functiontab" target="stats.html"></div>
+
+                <!-- Utilities -->
+                <div id="utils" class="functiontab" target="utils.html"></div>
+            </div>
+            </div>
+        </div>
+        <div class="sideWrapper" style="display:none;">
+            <div class="fadingBackground" onclick="hideSideWrapper();"></div>
+            <div class="content">
+                <div class="sideWrapperMenu"></div>
+                <iframe src="snippet/placeholder.html"></iframe>
+            </div>
+        </div>
+        <br><br>
+        <div class="ui divider"></div>
+        <div class="ui container" style="color: grey; font-size: 90%">
+            <p><a href="https://zoraxy.aroz.org" target="_blank">Zoraxy</a> <span class="zrversion"></span> © 2021 - <span class="year"></span> tobychui. Licensed under AGPL</p>
+        </div>
+        
+        <div id="messageBox" class="ui green floating big compact message">
+            <p><i class="green check circle icon"></i> There are no messages</p>
+        </div>
+        
+        <div id="confirmBox" style="display:none;">
+            <div class="ui top attached progress">
+                <div class="bar" style="width: 100%; min-width: 0px;"></div>
+            </div>
+            <div class="confirmBoxBody">
+                <button class="ui red basic mini circular icon right floated button" style="margin-left: 0.4em;"><i class="ui times icon"></i></button>
+                <button class="ui green basic mini circular icon right floated button"><i class="ui check icon"></i></button>
+                <div class="questionToConfirm">Confirm Exit?</div>
+            </div>
+        </div>
+
+        <div id="tourModal" class="nofocus" position="center">
+            <h4 class="tourStepTitle">Welcome to Zoraxy Tour</h4>
+            <p class="tourStepContent">This is a simplified tour to show some of what it can do.
+                Use your keyboard or click the next button to get going.</p>
+            <div class="ui divider"></div>
+            <div class="ui equal width grid" align="center">
+                <div class="column"><button onclick="previousTourStep();" class="ui basic small disabled button tourStepButtonBack">Back</button></div>
+                <div class="column"><p style="margin-top: 0.4em">Steps <span class="tourStepCounter">1 / 9</span></p></div>
+                <div class="column nextStepAvaible"><button onclick="nextTourStep();" class="ui basic right floated small button tourStepButtonNext">Next</button></div>
+                <div class="column nextStepFinish"><button onclick="endTourFocus();" class="ui right floated small button tourStepButtonFinish">Finish</button></div>
+            </div>
+            <button onclick="endTourFocus();" class="ui circular small icon button tourCloseButton"><i class="ui times icon"></i></button>
+        </div>
+        <div id="tourModalOverlay" style="display:none;"></div>
+
+        <br><br>
+        <script>
+            $(".year").text(new Date().getFullYear());
+            /*
+                Loader function
+
+                Load all the components view from the 
+                components/ directory into their corrisponding divs
+            */
+            let loadingComponents = 0;
+            
+            function initTabs(callback=undefined){
+                $('.functiontab').each(function(){
+                    let loadTarget = $(this).attr("target");
+                    if (loadTarget != undefined){
+                        $(this).load("./components/" + loadTarget, function(){
+                            loadingComponents--;
+                        });
+                        loadingComponents++;
+                    }else{
+                        $(this).html(`<p>Unable to load components for this tab</p>`);
+                    }
+                })
+                if (callback != undefined){
+                    waitInit(callback);
+                }
+            }
+
+            function waitInit(callback = undefined, retryCount = 0){
+                if (loadingComponents > 0 && retryCount < 5){
+                    setTimeout(function(){
+                        waitInit(callback, retryCount++);
+                    }, 300);
+                }else if (loadingComponents == 0){
+                    callback();
+                }else{
+                    alert("Missing component. Please check if your installation is complete.")
+                }
+            }
+
+            initTabs(function(){
+                initRPStaste();
+
+                if (window.location.hash.length > 1){
+                    let tabID = window.location.hash.substr(1);
+                    openTabById(tabID);
+                }else{
+                    openTabById("status");
+                }
+                $(".ui.dropdown").dropdown();
+                $(".ui.checkbox").checkbox();
+
+                //Click on the current tab
+                $("#mainmenu").find(".item").each(function(){
+                    $(this).on("click", function(event){
+                        let tabid = $(this).attr("tag");
+                        openTabById(tabid);
+                    });
+                });
+
+                //Initialize all table that is sortable
+                $('table').tablesort();
+            });
+
+            function logout() {
+                $.get("/api/auth/logout", function(response) {
+                    if (response === "OK") {
+                        setTimeout(function(){
+                            window.location.href = "/login.html";
+                        }, 300);
+                    }
+                });
+            }
+
+            function toggleTheme(){
+                if ($("body").hasClass("darkTheme")){
+                    setDarkTheme(false);
+                    //Check if the snippet iframe is opened. If yes, set the dark theme to the iframe
+                    if ($(".sideWrapper").is(":visible")){
+                        $(".sideWrapper iframe")[0].contentWindow.setDarkTheme(false);
+                    }
+                }else{
+                    setDarkTheme(true);
+                    //Check if the snippet iframe is opened. If yes, set the dark theme to the iframe
+                    if ($(".sideWrapper").is(":visible")){
+                        $(".sideWrapper iframe")[0].contentWindow.setDarkTheme(true);
+                    }
+                    
+                }
+            }
+
+            function getTabButtonById(targetTabId){
+                let targetTabBtn = undefined;
+                $("#mainmenu").find(".item").each(function(){
+                    let tabid = $(this).attr("tag");
+                    
+                    if (tabid == targetTabId){
+                        targetTabBtn = $(this);
+                    }
+                });
+
+                return targetTabBtn;
+            }
+
+            //Select and open a tab by its tag id
+            let tabSwitchEventBind = {}; //Bind event to tab switch by tabid
+            function openTabById(tabID){
+                let targetBtn = getTabButtonById(tabID);
+                if (targetBtn == undefined){
+                    alert("Invalid tabid given");
+                    return;
+                }
+                if (window.innerWidth < 750){
+                    //RWD mode, hide toolbar
+                    $(".toolbar").fadeOut('fast');
+                }
+
+                $("#mainmenu").find(".item").removeClass("active");
+                $(targetBtn).addClass("active");
+                $(".functiontab").hide();
+                $("#" + tabID).fadeIn('fast', function(){
+                    setTimeout(function(){
+                        if (tabSwitchEventBind[tabID]){
+                            tabSwitchEventBind[tabID]();
+                        }
+                    },100)
+                });
+                $('html,body').animate({scrollTop: 0}, 'fast');
+                window.location.hash = tabID;
+            }
+
+            $(window).on("resize", function(){
+                if (window.innerWidth >= 750 && $(".toolbar").is(":visible") == false){
+                    $(".toolbar").show();
+                }
+            });
+
+            function msgbox(message, succ=true, delayDuration=3000){
+                let icon = `<i class="ui info circle icon"></i>`;
+                if (succ){
+                    $("#messageBox").attr("class", "ui green floating compact message")
+                    icon = `<i class="ui green circle check icon"></i>`;
+                }else{
+                    message = message.capitalize();
+                    $("#messageBox").attr("class", "ui red floating compact message")
+                    icon = `<i class="ui red circle times icon"></i>`;
+                }
+                $("#messageBox").html(`${icon} ${message}`);
+                $("#messageBox").stop().finish().fadeIn("fast").delay(delayDuration).fadeOut("fast");
+            }
+
+            function confirmBox(question_to_confirm, callback, delaytime=15) {
+                
+                var progressBar = $("#confirmBox .bar");
+                var questionElement = $("#confirmBox .questionToConfirm");
+                
+                //Just to make sure there are no animation runnings
+                progressBar.stop();
+
+                // Update the question to confirm
+                questionElement.text(question_to_confirm);
+
+                // Start the progress bar animation
+                progressBar.css("width", "100%");
+                progressBar.animate({ width: "0%", easing: "linear" }, delaytime * 1000, function() {
+                    // Animation complete, invoke the callback with undefined
+                    callback(undefined);
+
+                    //Unset the event listener
+                    $("#confirmBox .ui.green.button").off("click");
+
+                    // Hide the confirm box
+                    $("#confirmBox").hide();
+                });
+
+                // Bind click event to "Yes" button
+                $("#confirmBox .ui.green.button").on("click", function() {
+                    // Stop the progress bar animation
+                    progressBar.stop();
+
+                    // Invoke the callback with true
+                    callback(true);
+
+                    // Hide the confirm box
+                    $("#confirmBox").hide();
+
+                    //Unset the event listener
+                    $("#confirmBox .ui.green.button").off("click");
+                });
+
+                // Bind click event to "No" button
+                $("#confirmBox .ui.red.button").on("click", function() {
+                    // Stop the progress bar animation
+                    progressBar.stop();
+
+                    // Invoke the callback with false
+                    callback(false);
+
+                    // Hide the confirm box
+                    $("#confirmBox").hide();
+
+                     //Unset the event listener
+                    $("#confirmBox .ui.red.button").off("click");
+                });
+
+                // Show the confirm box
+                $("#confirmBox").show().transition('jiggle');
+            }
+
+            /*
+                Toggles for side wrapper
+            */
+
+            function showSideWrapper(scriptpath=""){
+                if (scriptpath != ""){
+                    $(".sideWrapper iframe").attr("src", scriptpath);
+                }
+
+                if ($(".sideWrapper .content").transition("is animating") || $(".sideWrapper .content").transition("is visible")){
+                    return
+                }
+                $(".sideWrapper").show();
+                $(".sideWrapper .fadingBackground").fadeIn("fast");
+                $(".sideWrapper .content").transition('slide left in', 300);
+                $("body").css("overflow", "hidden");
+            }
+
+            function hideSideWrapper(discardFrameContent = false){
+                if (discardFrameContent){
+                    $(".sideWrapper iframe").attr("src", "snippet/placeholder.html");
+                }
+                if ($(".sideWrapper .content").transition("is animating") || !$(".sideWrapper .content").transition("is visible")){
+                    return
+                }
+                $(".sideWrapper .content").transition('slide left out', 300, function(){
+                    $(".sideWrapper .fadingBackground").fadeOut("fast", function(){
+                        $(".sideWrapper").hide(); 
+                    });
+                });
+                $("body").css("overflow", "auto");
+            }
+        </script>
+    </body>
+</html>

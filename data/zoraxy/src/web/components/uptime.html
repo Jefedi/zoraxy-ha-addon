@@ -1,0 +1,240 @@
+<div class="standardContainer">
+    <div class="ui basic segment">
+        <h2>Uptime Monitor</h2>
+        <p>Check the online state of proxied targets</p>
+    </div>
+    <div class="ui divider"></div>
+    <div id="utmrender" class="ui basic segment">
+        <div class="ui basic segment">
+            <h4 class="ui header">
+                <i class="red remove icon"></i>
+                <div class="content">
+                    Uptime Monitoring service is currently unavailable
+                    <div class="sub header">This might be caused by an error in cluster communication within the host servers. Please wait for administrator to resolve the issue.</div>
+                </div>
+            </h4> 
+        </div>
+    </div>
+    <div align="center">
+        <button class="ui basic circular green icon button" onclick="reloadUptimeList();"><i class="refresh icon"></i></button>   
+    </div>
+</div>
+
+
+<script>
+    var uptime5xxErrorMessage = {
+        "500": "Internal Server Error",
+        "501": "Not Implemented",
+        "502": "Bad Gateway",
+        "503": "Service Unavailable",
+        "504": "Gateway Timeout",
+        "505": "HTTP Version Not Supported",
+        "506": "Variant Also Negotiates",
+        "507": "Insufficient Storage",
+        "508": "Loop Detected",
+        "510": "Not Extended",
+        "511": "Network Authentication Required",
+        "520": "Web Server Returned an Unknown Error (Cloudflare)",
+        "521": "Web Server is Down (Cloudflare)",
+        "522": "Connection Timed Out (Cloudflare)",
+        "523": "Origin is Unreachable (Cloudflare)",
+        "524": "A Timeout Occurred (Cloudflare)",
+        "525": "SSL Handshake Failed (Cloudflare)",
+        "526": "Invalid SSL Certificate (Cloudflare)",
+        "527": "Railgun Error (Cloudflare)",
+        "530": "Site is Frozen (Pantheon)"
+    }
+
+        $('#utmEnable').checkbox({
+          onChange: function() {
+            var utmEnable = $('input[name="utmEnable"]').is(":checked");
+            $.post({
+              url: '/api/toggle-utm',
+              data: {utmEnable: utmEnable},
+              success: function(response) {
+                console.log(response);
+              },
+              error: function(error) {
+                console.log(error);
+              }
+            });
+          }
+        });
+
+    function initUptimeTable(){
+        $.get("/api/utm/list", function(data){
+            let records = data;
+            renderRecords(records);
+        })
+    }
+    initUptimeTable();
+
+    function reloadUptimeList(){
+        $("#utmrender").html(`<div class="ui utmloading segment">
+        <div class="ui active inverted dimmer" style="z-index: 2;">
+            <div class="ui text loader">Loading</div>
+        </div>
+        <br><br><br><br>
+        </div>`);
+        setTimeout(initUptimeTable, 300);
+    }
+
+    //For every 5 minutes
+    setInterval(function(){
+        $.get("/api/utm/list", function(data){
+            console.log("Status Updated");
+            records = data;
+            renderRecords(records);
+        });
+    }, (300 * 1000));
+    
+    function renderRecords(records){
+        $("#utmrender").html("");
+        for (let [key, value] of Object.entries(records)) {
+            renderUptimeData(key, value);
+        }
+    }
+
+    function format_time(s) {
+        const date = new Date(s * 1e3);
+        return(date.toLocaleString());
+    }
+
+    function resolveUptime5xxErrorMessage(errorCode){
+        if (uptime5xxErrorMessage[errorCode] != undefined){
+            return uptime5xxErrorMessage[errorCode]
+        }else{
+            return "Unknown Error";
+        }
+    }
+
+
+    function renderUptimeData(key, value){
+        if (value.length == 0){
+            return
+        }
+
+        let id = value[0].ID;
+        let name = value[0].Name;
+        let url = value[value.length - 1].URL;
+        let protocol = value[0].Protocol;
+
+        //Generate the status dot
+        let statusDotList = ``;
+        for(var i = 0; i < (288 - value.length); i++){
+            //Padding
+            statusDotList += `<div class="padding statusDot"></div>`
+        }
+
+        let ontimeRate = 0;
+        for (var i = 0; i < value.length; i++){
+            //Render status to html
+            let thisStatus = value[i];
+            let dotType = "";
+            let statusCode = thisStatus.StatusCode;
+
+            if (!thisStatus.Online && statusCode == 0){
+                dotType = "offline";
+            }else if (statusCode < 200){
+                //1xx
+                dotType = "error";
+                ontimeRate++;
+            }else if (statusCode < 300){
+                //2xx
+                dotType = "online";
+                ontimeRate++;
+            }else if (statusCode < 400){
+                //3xx
+                dotType = "online";
+                ontimeRate++;
+            }else if (statusCode < 500){
+                //4xx
+                dotType = "error";
+                ontimeRate++;
+            }else if (statusCode < 600){
+                //5xx
+                dotType = "error";
+            }else {
+                dotType = "offline";
+            }
+        
+            let datetime = format_time(thisStatus.Timestamp);
+            statusDotList += `<div title="${datetime}" class="${dotType} statusDot"></div>`
+        }
+
+        ontimeRate = ontimeRate / value.length * 100;
+        let ontimeColor = "#df484a"
+        if (ontimeRate > 0.8){
+            ontimeColor = "#3bd671";
+        }else if(ontimeRate > 0.5) {
+            ontimeColor = "#f29030";
+        }
+        //Check of online status now
+        let currentOnlineStatus = "Unknown";
+        let onlineStatusCss = ``;
+        let reminderEle = ``;
+        if (value[value.length - 1].Online){
+            currentOnlineStatus = `<i class="circle icon"></i> Online`;
+            onlineStatusCss = `color: #3bd671;`;
+        }else{
+            if (value[value.length - 1].StatusCode >= 500 && value[value.length - 1].StatusCode < 600){
+                var latestStatusCode = value[value.length - 1].StatusCode
+                currentOnlineStatus = `<i class="exclamation circle icon"></i>${latestStatusCode} - ${resolveUptime5xxErrorMessage(latestStatusCode)}`;
+                onlineStatusCss = `color: #f38020;`;
+                reminderEle = `<small style="${onlineStatusCss}">Downstream proxy server is responsive but returning server error</small>`;
+            }else if (value[value.length - 1].StatusCode >= 400 && value[value.length - 1].StatusCode <= 405){
+                let latestStatusCode = value[value.length - 1].StatusCode;
+                switch(latestStatusCode){
+                    case 400:
+                        currentOnlineStatus = `<i class="exclamation circle icon"></i> Bad Request`;
+                        break;
+                    case 401:
+                        currentOnlineStatus = `<i class="exclamation circle icon"></i> Unauthorized`;
+                        break;
+                    case 403:
+                        currentOnlineStatus = `<i class="exclamation circle icon"></i> Forbidden`;
+                        break;
+                    case 404: 
+                        currentOnlineStatus = `<i class="exclamation circle icon"></i> Not Found`;
+                        break; 
+                    case 405: 
+                        currentOnlineStatus = `<i class="exclamation circle icon"></i> Method Not Allowed`;
+                        break;
+                    default:
+                        currentOnlineStatus = `<i class="exclamation circle icon"></i> Status Code: ${latestStatusCode}`;
+                        break;
+                }
+                
+                onlineStatusCss = `color: #f38020;`;
+                reminderEle = `<small style="${onlineStatusCss}">Target online but not accessible</small>`;
+            
+            }else{
+                currentOnlineStatus = `<i class="circle icon"></i> Offline`;
+                onlineStatusCss = `color: #df484a;`;
+            }
+           
+        }
+
+        //Generate the html
+        $("#utmrender").append(`<div class="ui basic segment statusbar">
+            <div class="domain">
+                <div style="position: absolute; top: 0; right: 0.4em;">
+                    <p class="onlineStatus" style="display: inline-block; font-size: 1.2em; padding-right: 0.5em; padding-left: 0.3em; ${onlineStatusCss}">${currentOnlineStatus}</p>
+                </div>
+                <div>
+                    <h3 class="ui header" style="margin-bottom: 0.2em;">${name}</h3>
+                    <a href="${url}" target="_blank">${url}</a> | <span style="color: ${ontimeColor};">${(ontimeRate).toFixed(2)}%<span>
+                </div>
+                <div class="ui basic label protocol" style="position: absolute; bottom: 0; right: 0.2em; margin-bottom: -0.6em;">
+                    proto: ${protocol}
+                </div>
+            </div>
+            <div class="status" style="marign-top: 1em;">
+                ${statusDotList}
+            </div>
+            ${reminderEle}
+            <div class="ui divider"></div>
+        </div>`);
+    }
+    
+</script>

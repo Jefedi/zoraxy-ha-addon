@@ -1,0 +1,770 @@
+<style>
+    #redirect.disabled{
+        opacity: 0.7;
+        pointer-events: none;
+        user-select: none;
+    }
+</style>
+<div class="ui stackable grid">
+    <div class="ten wide column serverstatusWrapper">
+        <div id="serverstatus" class="ui statustab inverted segment">
+            <h1 class="ui header" style="margin-top: 1em; margin-left: 0.4em; padding-bottom: 1em;">
+                <i id="rpStatusIcon" class="loading spinner icon"></i>
+                <div class="content">
+                    <span id="statusTitle">Loading</span>
+                    <div class="sub header" id="statusText">Checking server status</div>
+                </div>
+            </h1>
+            <div class="dot-container">
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+            </div>
+        </div>
+    </div>
+    <div class="six wide column statisticWrapper">
+        <div class="ui statustab segment">
+            <h5 class="ui header">
+                <i class="exchange icon"></i>
+                <div class="content">
+                    <span id="summaryTotalCount"></span> <small>Req. Today</small>
+                    <div class="sub header" style="margin-top: 0.4em;">
+                    <i class="green circle check icon"></i> <span id="summarySuccCount"></span>
+                        / <i class="red red exclamation circle icon"></i> <span id="summaryErrCount"></span>
+                    </div>
+                </div>
+            </h5>
+            <div class="ui divider"></div>
+            <h5 class="ui header" style="margin-top: 0px;">
+                <i class="arrows alternate horizontal icon"></i>
+                <div class="content">
+                    <span id="forwardtype"></span>
+                    <div class="sub header" id="forwardtypeList">
+
+                    </div>
+                </div>
+            </h5>
+            <div class="ui divider"></div>
+            <h5 class="ui header"  style="margin-top: 0px;">
+                <i class="map marker alternate icon"></i>
+                <div class="content">
+                    <span id="country"></span>
+                    <div class="sub header" id="countryList">
+                        <i class="ui loading circle notch icon"></i> Resolving GeoIP
+                    </div>
+                </div>
+            </h5>
+        </div>
+    </div>
+</div>
+<div class="standardContainer" style="padding-bottom: 0 !important;">
+    <!-- Power Buttons-->
+    <div class="poweroptions" style="display:inline-block;">
+        <button id="startbtn" class="ui basic button" onclick="startService();"><i class="ui green arrow alternate circle up icon"></i> Start Service</button>
+        <button id="stopbtn" class="ui basic notloopbackOnly disabled button" onclick="stopService();"><i class="ui red minus circle icon"></i> Stop Service</button>
+    </div>
+    <div class="ui divider"></div>
+    <h4>Network Status</h4>
+    <p>Overall Network I/O in Current Host Server</p>
+</div>
+<div id="networkActWrapper" class="standardContainer" style="position: relative;">
+    <canvas id="networkActivity"></canvas>
+</div>
+<div id="networkActivityPlaceHolder">
+    <p style="opacity: 0.5;"> Graph Render Paused</p>
+</div>
+<div class="standardContainer">
+    <div class="ui divider"></div>
+    <h4>Global Settings</h4>
+    <p>Inbound Port (Reverse Proxy Listening Port)</p>
+    <div class="ui action fluid notloopbackOnly input" tourstep="incomingPort">
+        <small id="applyButtonReminder">Click "Apply" button to confirm listening port changes</small>
+        <input type="text" id="incomingPort" placeholder="Incoming Port" value="443">
+        <button class="ui green notloopbackOnly button" style="background: linear-gradient(60deg, #27e7ff, #00ca52);" onclick="handlePortChange();"><i class="ui checkmark icon"></i> Apply</button>
+    </div>
+    <br>
+    <div id="tls" class="ui toggle notloopbackOnly checkbox">
+        <input type="checkbox">
+        <label>Use TLS to serve proxy request<br>
+        <small>Also known as HTTPS mode</small></label>
+    </div>
+    <br>
+    <div id="listenP80" class="ui toggle notloopbackOnly tlsEnabledOnly checkbox" style="margin-top: 0.4em;" >
+        <input type="checkbox">
+        <label>Enable HTTP server on port 80<br>
+        <small>Accept HTTP requests even if you are using HTTPS mode</small></label>
+    </div>
+    <br>
+    <div tourstep="forceHttpsRedirect" style="display: inline-block;">
+        <div id="redirect" class="ui toggle notloopbackOnly tlsEnabledOnly checkbox" style="margin-top: 0.4em;">
+            <input type="checkbox">
+            <label>Force redirect HTTP request to HTTPS<br>
+            <small>Redirect web traffic from port 80 to 443, require enabling HTTP server on port 80</small></label>
+        </div>
+    </div>
+    <div class="ui basic segment advanceoptions">
+        <div class="ui accordion advanceSettings">
+            <div class="title">
+              <i class="dropdown icon"></i>
+                Advance Settings
+            </div>
+            <div class="content">
+                <div id="tlsMinVer" class="ui toggle notloopbackOnly tlsEnabledOnly checkbox" style="margin-top: 0.6em;">
+                    <input type="checkbox">
+                    <label>Force TLS v1.2 or above<br>
+                    <small>(Enhance security, but not compatible with legacy browsers)</small></label>
+                </div>
+                <br>
+                <div id="developmentMode" class="ui toggle checkbox" style="margin-top: 0.6em;">
+                    <input type="checkbox">
+                    <label>Development Mode<br>
+                    <small>(Set Cache-Control to no-store so browser will always fetch new contents from your sites)</small></label>
+                </div>
+                <br>
+            </div>
+        </div>
+    </div>
+   
+    <div id="rploopbackWarning" class="ui segment" style="display:none;">
+        <b><i class="yellow warning icon"></i> Loopback Routing Warning</b><br>
+        <small>This management interface is a loopback proxied service. <br>If you want to shutdown the reverse proxy server, please remove the proxy rule for the management interface and refresh.</small>
+    </div>
+    <div class="ui divider"></div>
+    <div class="">
+    <h4>Statistic Overview</h4>
+    <div class="ui two column stackable grid">
+        <div class="column">
+        <p>Visitor Counts</p>
+        <table class="ui unstackable very basic celled table">
+            <thead>
+            <tr>
+                <th>Country ISO Code</th>
+                <th>Unique Visitors</th>
+            </tr>
+            </thead>
+            <tbody id="countryCodetable">
+                <tr>
+                    <td colspan="2">No Data</td>
+                </tr>
+            </tbody>
+        </table>
+        </div>
+        <div class="column">
+        <p>Proxy Request Types</p>
+        <table class="ui unstackable very basic celled table">
+            <thead>
+            <tr>
+                <th>Proxy Type</th>
+                <th>Count</th>
+            </tr>
+            </thead>
+            <tbody id="forwardTypeTable">
+                <tr>
+                    <td colspan="2">No Data</td>
+                </tr>
+            </tbody>
+        </table>
+        </div>
+    </div>
+    </div>
+    <br>
+    <button class="ui right floated basic button" onclick="getDailySummaryDetails();"><i class="green refresh icon"></i> Refresh</button>
+    <br><br>
+</div>
+<script>
+    let loopbackProxiedInterface = false;
+    let currentListeningPort = 80;
+    $(".advanceSettings").accordion();
+
+    //Initial the start stop button if this is reverse proxied
+    $.get("/api/proxy/requestIsProxied", function(data){
+        if (data == true){
+            //This management interface is reverse proxied by itself
+            //do not allow turning off the proxy
+            $(".notloopbackOnly").addClass("disabled");
+            loopbackProxiedInterface = true;
+            $("#rploopbackWarning").show();
+        }   
+    });
+
+    //Get the latest server status from proxy server
+    function initRPStaste(){
+        $.get("/api/proxy/status", function(data){
+            $("#incomingPort").off("change");
+
+            if (data.Running == true){
+                $("#startbtn").addClass("disabled");
+                if (!loopbackProxiedInterface){
+                    $("#stopbtn").removeClass("disabled");
+                }
+                $("#serverstatus").addClass("green");
+                $("#statusTitle").text("Online");
+                $("#rpStatusIcon").attr("class", "white circle check icon");
+                $("#statusText").text("Serving request on port: " + data.Option.Port);
+            }else{
+                $("#startbtn").removeClass("disabled");
+                $("#stopbtn").addClass("disabled");
+                $("#statusTitle").text("Offline");
+                $("#rpStatusIcon").attr("class", "yellow moon icon")
+                $("#statusText").text("Reverse proxy server is offline");
+                $("#serverstatus").removeClass("green");
+            }
+            $("#incomingPort").val(data.Option.Port);
+            currentListeningPort = data.Option.Port;
+            $("#incomingPort").on("change", function(){
+                let newPortValue = $("#incomingPort").val().trim();
+                if (currentListeningPort != newPortValue){
+                    $("#applyButtonReminder").show();
+                }else{
+                    $("#applyButtonReminder").hide();
+                }
+            });
+            
+        });
+        
+    }
+
+    function getDailySummaryDetails(){
+        function sortObjectByValue(obj) {
+            // Convert object to array of [key, value] pairs
+            const entries = Object.entries(obj);
+            
+            // Sort array based on value of each pair
+            entries.sort((a, b) => {
+                return b[1] - a[1];
+            });
+            
+            // Convert sorted array back to object
+            const sortedObj = {};
+            for (const [key, value] of entries) {
+                sortedObj[key] = value;
+            }
+            
+            return sortedObj;
+        }
+
+        $.get("/api/stats/countries", function(data){
+            data = sortObjectByValue(data);
+            $("#country").html((Object.keys(data)[0])?Object.keys(data)[0]:"No Data");
+            $("#countryList").html(`
+            <div>
+                ${(Object.keys(data)[1])?Object.keys(data)[1]:"-"}<br>
+                ${(Object.keys(data)[2])?Object.keys(data)[2]:"-"}
+            </div>
+            `);
+
+            //populate the table
+            $("#countryCodetable").html("");
+            for (const [key, value] of Object.entries(data)) {
+                var countryName = getCountryName(key);
+                if (countryName == ""){
+                    countryName = "LAN"
+                }
+                $("#countryCodetable").append(`<tr>
+                    <td>${key} (${countryName})</td>
+                    <td>${value}</td>
+                </tr>`);
+            }
+
+            if (Object.keys(data).length == 0){
+                $("#countryCodetable").append(`<tr>
+                    <td colspan="2"><i class="ui green circle check icon"></i> No Data</td>
+                </tr>`);
+            }
+            
+        });
+
+        //Filter forward type
+        function fft(ft){
+            if (ft.indexOf("-") >= 0){
+                ft = ft.replace("-", " (");
+                ft = ft + ")";
+            }
+
+            ft = ft.charAt(0).toUpperCase() + ft.slice(1);
+            return ft;
+        }
+
+        $.get("/api/stats/summary", function(data){
+            data = sortObjectByValue(data.ForwardTypes);
+            $("#forwardtype").html((Object.keys(data)[0])?fft(Object.keys(data)[0]) + ": " + abbreviateNumber(data[Object.keys(data)[0]]):"No Data");
+            $("#forwardtypeList").html(`
+            <div>
+                ${(Object.keys(data)[1])?fft(Object.keys(data)[1]) + ": " + abbreviateNumber(data[Object.keys(data)[1]]):"-"}<br>
+                ${(Object.keys(data)[2])?fft(Object.keys(data)[2]) + ": " + abbreviateNumber(data[Object.keys(data)[2]]):"-"}
+            </div>
+            `);
+
+            $("#forwardTypeTable").html("");
+            for (const [key, value] of Object.entries(data)) {
+                $("#forwardTypeTable").append(`<tr>
+                    <td>${key}</td>
+                    <td>${value}</td>
+                </tr>`);
+            }
+
+            if (Object.keys(data).length == 0){
+                $("#forwardTypeTable").append(`<tr>
+                    <td colspan="2"><i class="ui green circle check icon"></i> No Data</td>
+                </tr>`);
+            }
+        });
+    }
+    getDailySummaryDetails();
+
+
+    function getDailySummary(){
+        $.get("/api/stats/summary?fast=true", function(data){
+            $("#summaryTotalCount").text(abbreviateNumber(data.TotalRequest));
+            $("#summarySuccCount").text(abbreviateNumber(data.ValidRequest));
+            $("#summaryErrCount").text(abbreviateNumber(data.ErrorRequest));
+        });
+    }
+    setInterval(function(){
+        getDailySummary();
+    }, 10000);
+    getDailySummary();
+
+    //Start and stop service button
+    function startService(){
+        $.cjax({
+            url: "/api/proxy/enable",
+            method: "POST",
+            data: {enable: true},
+            success: function(data){
+                if (data.error != undefined){
+                    msgbox(data.error, false, 5000);
+                }
+                initRPStaste();
+            }
+
+        });
+    }   
+
+    function stopService(){
+        $.cjax({
+            url: "/api/proxy/enable",
+            method: "POST",
+            data: {enable: false},
+            success: function(data){
+                if (data.error != undefined){
+                    msgbox(data.error, false, 5000);
+                }
+                initRPStaste();
+            }
+
+        });
+    }
+
+    function handleP80ListenerStateChange(enabled){
+        $.cjax({
+            url: "/api/proxy/listenPort80",
+            method: "POST",
+            data: {"enable": enabled},
+            success: function(data){
+                if (data.error != undefined){
+                    console.log(data.error);
+                    return;
+                }
+                if (enabled){
+                    //$("#redirect").show();
+                    $("#redirect").removeClass("disabled");
+                    msgbox("Port 80 listener enabled");
+                }else{
+                    //$("#redirect").hide();
+                    $("#redirect").addClass("disabled");
+                    msgbox("Port 80 listener disabled");
+                }
+            }
+        });
+       
+    }
+
+
+    function handlePortChange(){
+        var newPortValue = $("#incomingPort").val();
+        if (isNaN(newPortValue - 1) || newPortValue < 1 || newPortValue > 65535){
+            msgbox("Invalid incoming port value", false, 5000);
+            return;
+        }
+
+        $.cjax({
+            url: "/api/proxy/setIncoming",
+            method: "POST",
+            data: {incoming: newPortValue},
+            success: function(data){
+                if (data.error != undefined){
+                    msgbox(data.error, false, 5000);
+                    return;
+                }
+                msgbox("Listening Port Updated");
+                initRPStaste();
+
+                //Hide the reminder text
+                $("#applyButtonReminder").hide();
+            }
+        });
+    }
+
+    function initPort80ListenerSetting(){
+        $.get("/api/proxy/listenPort80", function(data){
+            if (data){
+                $("#listenP80").checkbox("set checked");
+                $("#redirect").removeClass("disabled");
+                //$("#redirect").show();
+            }else{
+                $("#listenP80").checkbox("set unchecked");
+                $("#redirect").addClass("disabled");
+                //$("#redirect").hide();
+            }
+
+            $("#listenP80").find("input").on("change", function(){
+                let enabled = $(this)[0].checked;
+                handleP80ListenerStateChange(enabled);
+            })
+        });
+        
+    }
+    initPort80ListenerSetting();
+
+    function initHTTPtoHTTPSRedirectSetting(){
+        $.get("/api/proxy/useHttpsRedirect", function(data){
+            if (data == true){
+                $("#redirect").checkbox("set checked");
+            }
+
+            //Initiate the input listener on the checkbox
+            $("#redirect").find("input").on("change", function(){
+                let thisValue = $("#redirect").checkbox("is checked");
+                    $.cjax({
+                        url: "/api/proxy/useHttpsRedirect",
+                        method: "POST",
+                        data: {set: thisValue},
+                        success: function(data){
+                            if (data.error != undefined){
+                                msgbox(data.error, false, 8000);
+
+                                //Restore backend value to make sure the UI is always in sync
+                                $.get("/api/proxy/useHttpsRedirect", function(data){
+                                    if (data == true){
+                                        $("#redirect").checkbox("set checked");
+                                    }else{
+                                        $("#redirect").checkbox("set unchecked");
+                                    }
+                                });
+                            }else{
+                                //Updated
+                                msgbox("Setting Updated");
+                                initRPStaste();
+                            }
+                        }
+                    })
+            });
+        });
+    }
+    initHTTPtoHTTPSRedirectSetting();
+
+    function initTlsVersionSetting(){
+        $.get("/api/cert/tlsRequireLatest", function(data){
+            if (data == true){
+                $("#tlsMinVer").checkbox("set checked");
+            }else{
+                $("#tlsMinVer").checkbox("set unchecked");
+            }
+
+            //Bind events to the checkbox
+            $("#tlsMinVer").find("input").on("change", function(){
+                let thisValue = $("#tlsMinVer").checkbox("is checked");
+                $.cjax({
+                    url: "/api/cert/tlsRequireLatest",
+                    data: {"set": thisValue},
+                    method: "POST",
+                    success: function(data){
+                        if (data.error != undefined){
+                            msgbox(data.error, false, 5000);
+                        }else{
+                            msgbox("TLS Version Setting Updated");
+                        }
+                    }
+                })
+            });
+        });
+        
+    }
+    initTlsVersionSetting();
+
+    function initDevelopmentMode(){
+        $.get("/api/proxy/developmentMode", function(data){
+            if (data === true){
+                $("#developmentMode").checkbox("set checked")
+            }else{
+                $("#developmentMode").checkbox("set unchecked")
+            }
+            
+            //Bind change events
+            $("#developmentMode").off("change").on("change", function(data){
+                let enableDevMode = ($(this).find("input[type='checkbox']")[0].checked);
+                $.get("/api/proxy/developmentMode?enable=" + enableDevMode, function(data){
+                    if (enableDevMode){
+                        msgbox("Development mode enabled");
+                    }else{
+                        msgbox("Development mode disabled");
+                    }
+                    
+                });
+            });
+        });
+    }
+    initDevelopmentMode();
+
+    function initTlsSetting(){
+        $.get("/api/cert/tls", function(data){
+            if (data == true){
+                $("#tls").checkbox("set checked");
+            }else{
+                $(".tlsEnabledOnly").addClass('disabled');
+                $(".tlsEnabledOnly").addClass('disabled');
+            }
+
+            //Initiate the input listener on the checkbox
+            $("#tls").find("input").on("change", function(){
+                let thisValue = $("#tls").checkbox("is checked");
+                if (thisValue){
+                    $(".tlsEnabledOnly").removeClass('disabled');
+                }else{
+                    $(".tlsEnabledOnly").addClass('disabled');
+                }
+                $.cjax({
+                    url: "/api/cert/tls",
+                    method: "POST",
+                    data: {set: thisValue},
+                    success: function(data){
+                        if (data.error != undefined){
+                            msgbox(data.error, false);
+                        }else{
+                            //Updated
+                            //Check for case if the port is invalid default ports
+                            if ($("#incomingPort").val() == "80" && thisValue == true){
+                                confirmBox("Change listen port to :443?", function(choice){
+                                    if (choice == true){
+                                        $("#incomingPort").val("443");
+                                        handlePortChange();
+                                    }
+                                });
+                                   
+                            }else if ($("#incomingPort").val() == "443" && thisValue == false){
+                                confirmBox("Change listen port to :80?", function(choice){
+                                    if (choice == true){
+                                        $("#incomingPort").val("80");
+                                        handlePortChange();
+                                    }
+                                });
+                            }else{
+                                msgbox("Setting Updated");
+                            }
+
+                            initRPStaste();
+                        }
+                    }
+                })
+            });
+        })
+      
+    }
+    initTlsSetting();
+
+</script>
+
+<script>
+    /*
+        Render Network Activity Graph
+    */
+
+    /*
+        Setup Graph
+    */
+   
+
+    let rxValues = [];
+    let txValues = [];
+    let dataCount = 300;
+    let timestamps = [];
+
+    for(var i = 0; i < dataCount; i++){
+        timestamps.push(new Date(Date.now() + i * 1000).toLocaleString().replace(',', ''));
+    }
+
+    function fetchData() {
+        $.ajax({
+            url: '/api/stats/netstatgraph?array=true',
+            success: function(data){
+                if (rxValues.length == 0){
+                    rxValues.push(...data.Rx);
+                }else{
+                    rxValues.push(data.Rx[dataCount-1]);
+                    rxValues.shift();
+                }
+
+                if (txValues.length == 0){
+                    txValues.push(...data.Tx);
+                }else{
+                    txValues.push(data.Tx[dataCount-1]);
+                    txValues.shift();
+                }
+                
+                timestamps.push(new Date(Date.now()).toLocaleString().replace(',', ''));
+                timestamps.shift();
+                updateChart();
+            }
+        })
+    }
+
+    function formatBandwidth(bps) {
+        const KBPS = 1000;
+        const MBPS = 1000 * KBPS;
+        const GBPS = 1000 * MBPS;
+
+        if (bps >= GBPS) {
+            return (bps / GBPS).toFixed(2) + " Gbps";
+        } else if (bps >= MBPS) {
+            return (bps / MBPS).toFixed(2) + " Mbps";
+        } else if (bps >= KBPS) {
+            return (bps / KBPS).toFixed(2) + " Kbps";
+        } else {
+            return bps.toFixed(2) + " bps";
+        }
+    }
+
+    var networkStatisticChart;
+    function initChart(){
+        $.get("/api/stats/netstat", function(data){
+        networkStatisticChart = new Chart(
+                document.getElementById('networkActivity'),
+                {
+                    type: 'line',
+                    responsive: true,
+                    resizeDelay: 300,
+                    options: {
+                        animation: false,
+                        maintainAspectRatio: false,
+                        bezierCurve: true,
+                        tooltips: {enabled: false},
+                        hover: {mode: null},
+                        //stepped: 'middle',
+                        plugins: {
+                            legend: {
+                                display: true,
+                                position: "right",
+                            },
+                            title: {
+                                display: false,
+                                text: 'Network Statistic'
+                            },
+                        },
+                        scales: {
+                            x: {
+                                display: false,
+                                },
+                            y: {
+                                display: true,
+                                scaleLabel: {
+                                display: true,
+                                labelString: 'Value'
+                                },
+                                ticks: {
+                                    stepSize: 10000000,
+                                    callback: function(label, index, labels) {
+                                        return formatBandwidth(parseInt(label));
+                                    }
+                                },
+                                gridLines: {
+                                    display: true
+                                }
+                            }
+                        }
+                    },
+                    data: {
+                        labels: timestamps,
+                        datasets: [
+                            {
+                                label: 'Inbound',
+                                data: rxValues,
+                                borderColor: "#484bb8",
+                                borderWidth: 1,
+                                backgroundColor: 'rgba(72, 75, 184, 0.2)',
+                                fill: true,
+                                pointStyle: false,
+                            },
+                            {
+                                label: 'Outbound',
+                                data: txValues,
+                                borderColor: '#02a9c1',
+                                borderWidth: 1,
+                                backgroundColor: 'rgba(2, 169, 193, 0.2)',
+                                fill: true,
+                                pointStyle: false,
+                            }
+                        ]
+                    }
+                }
+            );
+        });
+    }
+
+    function updateChart() {
+        //networkStatisticChart.data.datasets[0].data = rxValues;
+        //networkStatisticChart.data.datasets[1].data = txValues;
+        if (networkStatisticChart != undefined){
+            networkStatisticChart.update();
+        }
+    }
+
+    function updateChartSize(){
+        let newSize = $("#networkActWrapper").width() - 300;
+        if (window.innerWidth > 750){
+            newSize = window.innerWidth - $(".toolbar").width() - 500;
+        }else{
+            newSize = $("#networkActWrapper").width() - 500;
+        }
+        if (networkStatisticChart != undefined){
+            networkStatisticChart.resize(newSize, 200);
+        }
+    }
+
+    function handleChartAccumulateResize(){
+        $("#networkActivity").hide();
+        $("#networkActivityPlaceHolder").show();
+        if (chartResizeTimeout != undefined){
+            clearTimeout(chartResizeTimeout);
+        }
+        chartResizeTimeout = setTimeout(function(){
+            chartResizeTimeout = undefined;
+            $("#networkActivityPlaceHolder").hide();
+            $("#networkActivity").show();
+            updateChartSize();
+        }, 300);
+    }
+
+    var chartResizeTimeout;
+    window.addEventListener('resize', () => {
+        handleChartAccumulateResize();
+    });
+
+    //Bind event to tab switch
+    tabSwitchEventBind["status"] = function(){
+        //On switch over to this page, resize the chart
+        handleChartAccumulateResize();
+        
+    }
+
+    window.addEventListener("focus", function(event){
+        handleChartAccumulateResize();
+    });
+
+
+    //Initialize chart data
+    initChart();
+    fetchData();
+    setInterval(fetchData, 1000);
+</script>

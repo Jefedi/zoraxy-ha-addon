@@ -1,8 +1,8 @@
-name: "Zoraxy"
+name: "Zoraxy_Home_Assistant"
 version: "1.0.0"
 slug: "zoraxy"
 description: "Zoraxy add-on for Home Assistant"
-url: "https://github.com/votre_utilisateur/zoraxy-ha-addon"
+url: "https://github.com/Jefedi/zoraxy-ha-addon"
 arch:
   - aarch64
   - amd64
